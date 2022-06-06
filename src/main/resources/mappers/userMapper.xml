@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.jisu.mappers.userMapper">
+	
+	<!-- 로그인 처리를 위한sql -->
+	<select id="login" parameterType="java.util.Map" resultType="java.util.Map">
+		select id, name
+		from user
+		where id=#{id} and pw=#{pw}
+	</select>
+	
+	<!-- 회원가입 -->
+	<insert id="join" parameterType="UserDTO">
+		insert into user
+		(id, pw, name)
+		values
+		(#{id}, #{pw}, #{name} )
+	</insert>
+	
+	<select id="checkId" resultType="java.lang.Integer">
+		select count(*)
+		from user
+		where id=#{id}
+	
+	</select>
+	
+	
+
+
+
+</mapper>

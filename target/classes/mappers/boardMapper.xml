@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.jisu.mappers.boardMapper">
+
+	<select id="countPaging" resultType="java.lang.Integer">
+		<![CDATA[
+			select count(bno)
+			from board
+			where bno > 0
+		]]>
+	</select>
+	<select id="listSearch" resultType="BoardDTO">
+		<![CDATA[
+		select
+		bno, title, contents, contents, id, regdate, readcnt
+		from board
+		where bno > 0
+		]]>
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and title like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'w'.toString()">
+				and id like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'tw'.toString()">
+				and ( title like CONCAT('%', #{keyword}, '%') OR id like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+		<![CDATA[	
+		limit  #{pageStart}, #{perPageNum}
+		]]>
+	</select>
+
+	<!--상세 조회 -->
+	<select id="detail" parameterType="int" resultType="BoardDTO">
+		select *
+		from board 
+		where bno=#{bno}
+	</select>
+	
+
+	<!-- 글쓰기 -->
+	<insert id="regist" parameterType="BoardDTO" >
+		insert into board 
+		(title, contents, id, regdate, readcnt)
+		values
+		(#{title}, #{contents}, #{id}, curdate(), 0)
+	</insert>
+	
+	<!-- 글수정 -->
+	<update id="update" parameterType="BoardDTO">
+		update board 
+		set title=#{title},
+		contents=#{contents}
+		where bno=#{bno}
+	</update>
+	
+	<!-- 글삭제 -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete 
+		from board 
+		where bno=#{bno}
+	</delete>
+	
+	<!-- 조회수 증가 -->
+	<update id="hitCnt" parameterType="BoardDTO">
+		update board
+		set readcnt= readcnt +1
+		where bno=#{bno}
+	</update>
+	
+	<!-- 게시글 번호에 해당하는 댓글리스트 조회 sql -->
+	<select id="replyList" resultType="ReplyDTO">
+		select *
+		from reply
+		where bno = #{bno}
+	</select>
+	
+		<!-- 댓글 작성 -->
+	<insert id="replyRegist" parameterType="ReplyDTO">
+		insert into reply
+		(rewriter, rememo, redate, bno)
+		values
+		(#{rewriter}, #{rememo}, now(), #{bno})
+	</insert>
+	
+	<!-- 댓글수정 -->
+	<update id="replyUpdate" parameterType="ReplyDTO">
+		update reply
+		set
+		rewriter =#{rewriter},
+		rememo =#{rememo}
+		where reno =#{reno}
+	
+	</update>
+	<delete id="replyDelete" parameterType="java.lang.Integer">
+		delete
+		from reply
+		where reno= #{reno}
+	</delete>
+	
+
+
+</mapper>
